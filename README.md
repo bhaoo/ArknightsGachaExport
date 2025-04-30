@@ -6,7 +6,7 @@ The exported data will be in the **data** directory of the project directory
 
 ## Usage Instructions:
 
-1. Run pip install -r requirements.txt to install dependencies.
+1. Run `pip install -r requirements.txt` to install dependencies.
 
 2. Before using, configure your token in the config.yml file.
 
