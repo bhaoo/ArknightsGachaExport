@@ -1,0 +1,10 @@
+# Please request https://web-api.hypergryph.com/account/info/hg to get the token
+token: "******************"
+
+api:
+  csrf_url: "https://ak.hypergryph.com/user"
+  app_token_url: "https://as.hypergryph.com/user/oauth2/v2/grant"
+  binding_list_url: "https://binding-api-account-prod.hypergryph.com/account/binding/v1/binding_list"
+  u8_token_url: "https://binding-api-account-prod.hypergryph.com/account/binding/v1/u8_token_by_uid"
+  role_login_url: "https://ak.hypergryph.com/user/api/role/login"
+  gacha_url: "https://ak.hypergryph.com/user/api/inquiry/gacha/history"
