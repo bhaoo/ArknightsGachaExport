@@ -1,16 +1,11 @@
 from datetime import datetime
 
 import requests
-import yaml
 import time
 import random
 
 from apscheduler.schedulers.blocking import BlockingScheduler
-from utils import find_default_uid, transform_records, merge_gacha_records
-
-def load_config():
-    with open('config.yml', 'r', encoding="utf-8") as f:
-        return yaml.safe_load(f)
+from utils import *
 
 config = load_config()
 
@@ -86,10 +81,15 @@ def fetch_arknights_data():
 
     merge_gacha_records(uid, transform_records(all_records))
 
+def main():
+    fetch_arknights_data()
+    if config.get("sftp", {}).get("enabled"):
+        upload_folder_via_sftp()
+
 if __name__ == "__main__":
     scheduler = BlockingScheduler()
     minutes = config["schedule"]["minute"]
     hours = config["schedule"]["hour"]
     days = config["schedule"]["day"]
-    scheduler.add_job(fetch_arknights_data, 'interval', days=days, hours=hours, minutes=minutes, next_run_time=datetime.now())
+    scheduler.add_job(main, 'interval', days=days, hours=hours, minutes=minutes, next_run_time=datetime.now())
     scheduler.start()

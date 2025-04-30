@@ -13,3 +13,11 @@ schedule:
   day: 1
   hour: 0
   minute: 0
+
+sftp:
+  enabled: false
+  host: "your_host"
+  port: 22
+  username: "your_username"
+  private_key: "./private_key"
+  remote_dir: "your_remote_dir"

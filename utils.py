@@ -1,5 +1,11 @@
 import json
 import os
+import paramiko
+import yaml
+
+def load_config():
+    with open('config.yml', 'r', encoding="utf-8") as f:
+        return yaml.safe_load(f)
 
 def find_default_uid(data):
     for app in data.get("data", {}).get("list", []):
@@ -47,3 +53,43 @@ def merge_gacha_records(uid, new_records, output_dir="data"):
         json.dump(existing_data, f, ensure_ascii=False, indent=2)
 
     print(f"[UID#{uid}] Merge {new_count} records.")
+
+
+def upload_folder_via_sftp():
+    print("Running data upload task...")
+
+    config = load_config()
+    sftp_cfg = config["sftp"]
+    remote_folder = sftp_cfg["remote_dir"]
+    hostname = sftp_cfg["host"]
+    port = sftp_cfg.get("port", 22)
+    username = sftp_cfg["username"]
+    private_key_path=os.path.expanduser(sftp_cfg["private_key"])
+
+    key = paramiko.RSAKey.from_private_key_file(private_key_path)
+
+    transport = paramiko.Transport((hostname, port))
+    transport.connect(username=username, pkey=key)
+    sftp = paramiko.SFTPClient.from_transport(transport)
+
+    try:
+        try:
+            sftp.chdir(remote_folder)
+        except IOError:
+            print(f"Remote directory not found. Creating: {remote_folder}.")
+            sftp.mkdir(remote_folder)
+            sftp.chdir(remote_folder)
+
+        local_dir = "./data"
+        for filename in os.listdir(local_dir):
+            local_path = os.path.join(local_dir, filename)
+            remote_path = f"{remote_folder.rstrip('/')}/{filename}"
+
+            if os.path.isfile(local_path):
+                print(f"Uploading: {filename}")
+                sftp.put(local_path, remote_path)
+
+        print("All files uploaded completed.")
+    finally:
+        sftp.close()
+        transport.close()
