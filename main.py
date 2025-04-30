@@ -53,31 +53,34 @@ def fetch_arknights_data():
     session.headers.update({
         "X-Role-Token": u8_token,
     })
-    params = {
-        "uid": uid,
-        "category": "normal",
-        "size": 50
-    }
+    response = session.get(config["api"]["cate_url"])
+    pool_id_list = [item["id"] for item in response.json().get("data")]
+
     all_records = []
-    while True:
-        response = session.get(config["api"]["gacha_url"], params=params)
-        data = response.json()
-        list = data["data"]["list"]
-        has_more = data["data"]["hasMore"]
+    for pool_id in pool_id_list:
+        params = {
+            "uid": uid,
+            "category": pool_id,
+            "size": 50
+        }
+        while True:
+            response = session.get(config["api"]["gacha_url"], params=params)
+            data = response.json()
+            list = data["data"]["list"]
+            has_more = data["data"]["hasMore"]
 
-        all_records.extend(list)
-        print(f"Obtained {len(all_records)} records...")
+            all_records.extend(list)
+            print(f"Obtained {len(all_records)} records...")
+            delay = random.uniform(1, 3)
+            print(f"Delay {delay}s...")
+            time.sleep(delay)
 
-        if not has_more:
-            break
+            if not has_more:
+                break
 
-        last_record = list[-1]
-        params["gachaTs"] = last_record["gachaTs"]
-        params["pos"] = last_record["pos"]
-
-        delay = random.uniform(1, 3)
-        print(f"Delay {delay}s...")
-        time.sleep(delay)
+            last_record = list[-1]
+            params["gachaTs"] = last_record["gachaTs"]
+            params["pos"] = last_record["pos"]
 
     merge_gacha_records(uid, transform_records(all_records))
 
