@@ -1,10 +1,12 @@
+from datetime import datetime
+
 import requests
 import yaml
 import time
 import random
 
+from apscheduler.schedulers.blocking import BlockingScheduler
 from utils import find_default_uid, transform_records, merge_gacha_records
-
 
 def load_config():
     with open('config.yml', 'r', encoding="utf-8") as f:
@@ -13,7 +15,7 @@ def load_config():
 config = load_config()
 
 def fetch_arknights_data():
-    print("Fetching Arknights Data...")
+    print(f"[{datetime.now()}] Fetching Arknights Data...")
 
     if config["token"] is None:
         print("[Error] Please provide your Arknights API token.")
@@ -85,4 +87,9 @@ def fetch_arknights_data():
     merge_gacha_records(uid, transform_records(all_records))
 
 if __name__ == "__main__":
-    fetch_arknights_data()
+    scheduler = BlockingScheduler()
+    minutes = config["schedule"]["minute"]
+    hours = config["schedule"]["hour"]
+    days = config["schedule"]["day"]
+    scheduler.add_job(fetch_arknights_data, 'interval', days=days, hours=hours, minutes=minutes, next_run_time=datetime.now())
+    scheduler.start()

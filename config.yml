@@ -8,3 +8,8 @@ api:
   u8_token_url: "https://binding-api-account-prod.hypergryph.com/account/binding/v1/u8_token_by_uid"
   role_login_url: "https://ak.hypergryph.com/user/api/role/login"
   gacha_url: "https://ak.hypergryph.com/user/api/inquiry/gacha/history"
+
+schedule:
+  day: 1
+  hour: 0
+  minute: 0
