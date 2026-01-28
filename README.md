@@ -42,4 +42,4 @@
 
 本软件开源、免费，仅供学习交流使用。
 
-Copyright © 2025 Bhao, under MIT License.
+Copyright © 2025-2026 Bhao, under MIT License.
